@@ -13,11 +13,16 @@ export const MEALS: {
 		priority: 1,
 	},
 	{
+		mealName: /^.*?Teriyaki Salmon Bowl.*?/i,
 		restaurantName: /^.*?Poke Bowl - 5th Ave.*?/i,
 		priority: 2,
 	},
 	{
 		restaurantName: /^.*?sweetgreen - NoMad.*?/i,
-		priority: 3,
+		priority: 10,
+	},
+	{
+		restaurantName: /^.*?Poke Bowl - 5th Ave.*?/i,
+		priority: 15,
 	},
 ];
