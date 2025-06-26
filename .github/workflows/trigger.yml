@@ -8,6 +8,9 @@ on:
 jobs:
     run-bun:
         runs-on: ubuntu-latest
+        env:
+            MEALPAL_USERNAME: ${{ secrets.MEALPAL_USERNAME }}
+            MEALPAL_PASSWORD: ${{ secrets.MEALPAL_PASSWORD }}
         steps:
             - uses: oven-sh/setup-bun@v1
               with:
