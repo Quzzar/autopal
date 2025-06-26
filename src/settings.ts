@@ -1,6 +1,6 @@
 export const CITY = `00000000-1000-4000-9845-9344bdb9408c`; // NYC
 //
-export const PICKUP_TIME = '12:15PM-12:30PM';
+export const PICKUP_TIME = '1:00PM-1:15PM';
 //
 export const MEALS: {
 	restaurantName?: RegExp;
