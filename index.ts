@@ -36,6 +36,9 @@ async function login() {
 }
 
 async function getMenu(sessionToken: string) {
+	console.log(
+		`https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu`
+	);
 	const res = await fetch(
 		`https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu`,
 		{
