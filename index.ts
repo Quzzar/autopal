@@ -37,9 +37,7 @@ async function login() {
 
 async function getMenu(sessionToken: string) {
 	const res = await fetch(
-		`https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate(
-			1
-		)}/product_offerings/lunch/spending_strategies/credits/menu`,
+		`https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu`,
 		{
 			method: 'GET',
 			headers: {
@@ -112,9 +110,7 @@ async function getMenu(sessionToken: string) {
 
 async function getInventories(sessionToken: string) {
 	const res = await fetch(
-		`https://secure.mealpal.com/api/v1/cities/${CITY}/dates/${getDate(
-			1
-		)}/product_offerings/lunch/spending_strategies/credits/menu_inventories`,
+		`https://secure.mealpal.com/api/v1/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu_inventories`,
 		{
 			method: 'GET',
 			headers: {
@@ -245,5 +241,3 @@ async function reserveMeal(sessionToken: string, scheduleId: string) {
 		return false;
 	}
 })();
-
-
