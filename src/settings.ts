@@ -14,6 +14,11 @@ export const MEALS: {
 		priority: 1,
 	},
 	{
+		mealName: /^.*?Miso Glazed Salmon.*?/i,
+		restaurantName: /^.*?sweetgreen - 32nd + Park.*?/i,
+		priority: 1,
+	},
+	{
 		mealName: /^.*?Teriyaki Salmon Bowl.*?/i,
 		restaurantName: /^.*?Poke Bowl - 5th Ave.*?/i,
 		priority: 2,
