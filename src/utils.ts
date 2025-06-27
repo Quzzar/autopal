@@ -6,10 +6,8 @@ export function sleep(ms: number) {
 
 export function getDate(dayOffset: number = 0): string {
 	const now = new Date();
-	// Add the offset (in ms)
-	now.setDate(now.getDate() + dayOffset);
+	now.setDate(now.getDate() + 86400000 * dayOffset);
 
-	// Format for NYC timezone
 	const formatter = new Intl.DateTimeFormat('en-CA', {
 		timeZone: TIMEZONE,
 		year: 'numeric',
@@ -17,7 +15,6 @@ export function getDate(dayOffset: number = 0): string {
 		day: '2-digit',
 	});
 
-	// This gives YYYY-MM-DD in en-CA locale
 	return formatter.format(now);
 }
 
