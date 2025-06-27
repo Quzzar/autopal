@@ -1,4 +1,5 @@
 export const CITY = `00000000-1000-4000-9845-9344bdb9408c`; // NYC
+export const TIMEZONE = 'America/New_York';
 //
 export const PICKUP_TIME = '1:00PM-1:15PM';
 //
@@ -26,5 +27,3 @@ export const MEALS: {
 		priority: 15,
 	},
 ];
-
-
