@@ -36,9 +36,8 @@ async function login() {
 }
 
 async function getMenu(sessionToken: string) {
-	console.log(
-		`https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu`
-	);
+	const url = `https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu`;
+
 	const res = await fetch(
 		`https://secure.mealpal.com/api/v6/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu`,
 		{
@@ -50,7 +49,7 @@ async function getMenu(sessionToken: string) {
 		}
 	);
 	if (!res.ok) {
-		throw new Error(`Menu fetch failed: ${res.statusText}`);
+		throw new Error(`Menu fetch failed: ${res.statusText} ${url}`);
 	}
 	const data = await res.json();
 	return data as {
