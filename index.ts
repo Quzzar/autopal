@@ -53,11 +53,11 @@ async function getMenu(sessionToken: string) {
 	return data as {
 		city: {
 			coordinates: { longitude: string; latitude: string };
-			id: '00000000-1000-4000-9845-9344bdb9408c';
-			name: 'New York City';
-			state: 'NY';
-			time_zone_name: 'America/New_York';
-			timezone_offset_hours: -4;
+			id: string;
+			name: string;
+			state: string;
+			time_zone_name: string;
+			timezone_offset_hours: number;
 		};
 		date: string;
 		extended_kitchen_start_time: string;
