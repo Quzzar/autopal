@@ -15,7 +15,7 @@ export const MEALS: {
 	},
 	{
 		mealName: /^.*?Miso Glazed Salmon.*?/i,
-		restaurantName: /^.*?sweetgreen - 32nd + Park.*?/i,
+		restaurantName: /^.*?sweetgreen - 32nd \+ Park.*?/i,
 		priority: 1,
 	},
 	{

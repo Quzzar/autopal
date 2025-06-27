@@ -182,16 +182,14 @@ async function reserveMeal(sessionToken: string, scheduleId: string) {
 	for (const restaurant of menu.restaurants) {
 		for (const schedule of restaurant.schedules) {
 			const inventory = invs.find((inv) => inv.id === schedule.id);
-			if (inventory && inventory.amount > 0) {
-				allMeals.push({
-					restaurantName: restaurant.name,
-					scheduleId: schedule.id,
-					mealName: schedule.meal.name,
-					mealId: schedule.meal.id,
-					mealPortion: schedule.meal.portion,
-					inventory: inventory.amount,
-				});
-			}
+			allMeals.push({
+				restaurantName: restaurant.name,
+				scheduleId: schedule.id,
+				mealName: schedule.meal.name,
+				mealId: schedule.meal.id,
+				mealPortion: schedule.meal.portion,
+				inventory: inventory?.amount ?? -999,
+			});
 		}
 	}
 
@@ -224,6 +222,11 @@ async function reserveMeal(sessionToken: string, scheduleId: string) {
 	// console.log(bestMeal);
 
 	if (bestMeal) {
+		if (bestMeal.inventory <= 0) {
+			console.log(
+				`<🤖> Not enough inventory for ${bestMeal.mealName} at ${bestMeal.restaurantName}. Attempting to reserve anyway...`
+			);
+		}
 		const status = await reserveMeal(token, bestMeal.scheduleId);
 		if (status === 201) {
 			console.log(
