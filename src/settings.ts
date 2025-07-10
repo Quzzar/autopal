@@ -24,6 +24,11 @@ export const MEALS: {
 		priority: 2,
 	},
 	{
+		mealName: /^.*?Chicken Parmesan Sandwich.*?/i,
+		restaurantName: /^.*?Freshy's Deli.*?/i,
+		priority: 8,
+	},
+	{
 		restaurantName: /^.*?sweetgreen - NoMad.*?/i,
 		priority: 10,
 	},
