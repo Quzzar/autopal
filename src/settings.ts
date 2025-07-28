@@ -24,6 +24,11 @@ export const MEALS: {
 		priority: 2,
 	},
 	{
+		mealName: /^.*?Chimi Chicken Sandwich.*?/i,
+		restaurantName: /^.*?The Picnic Basket - 37th St.*?/i,
+		priority: 3,
+	},
+	{
 		mealName: /^.*?Chicken al Pastor.*?/i,
 		restaurantName: /^.*?Avo - Nomad.*?/i,
 		priority: 3,
