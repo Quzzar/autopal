@@ -2,15 +2,15 @@ name: Cron Job
 
 on:
     schedule:
-        - cron: ''
+        - cron: '0 11 * * 1,2,4,5'
     workflow_dispatch:
 
 jobs:
     run-bun:
         runs-on: ubuntu-latest
         env:
-            // MEALPAL_USERNAME: ${{ secrets.MEALPAL_USERNAMEE }}
-            // MEALPAL_PASSWORD: ${{ secrets.MEALPAL_PASSWORDD }}
+            MEALPAL_USERNAME: ${{ secrets.MEALPAL_USERNAME }}
+            MEALPAL_PASSWORD: ${{ secrets.MEALPAL_PASSWORD }}
         steps:
             - uses: oven-sh/setup-bun@v1
               with:
@@ -22,4 +22,4 @@ jobs:
               run: bun install
 
             - name: Run script
-              run: bun indexts-do-not
+              run: bun index.ts

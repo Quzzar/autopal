@@ -6,7 +6,7 @@ export function sleep(ms: number) {
 
 export function getDate(dayOffset: number = 0): string {
 	const now = new Date();
-	now.setDate(now.getDate() + 86400000 * dayOffset);
+	now.setDate(now.getDate() + dayOffset);
 
 	const formatter = new Intl.DateTimeFormat('en-CA', {
 		timeZone: TIMEZONE,
@@ -23,3 +23,13 @@ export function getRandomNumber(min: number, max: number) {
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// export function sendNotification(message: string) {
+// 	const transporter = nodemailer.createTransport({
+// 		service: 'gmail',
+// 		auth: {
+// 			user: 'your-email@gmail.com',
+// 			pass: 'your-app-password', // generate an app password, don’t use real password
+// 		},
+// 	});
+// }
