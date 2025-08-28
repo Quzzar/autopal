@@ -1,4 +1,4 @@
-import { CITY, MEALS, PICKUP_TIME, RANDOM_SELECT_PERCENTAGE } from './src/settings';
+import { CITY, ENABLED, MEALS, PICKUP_TIME, RANDOM_SELECT_PERCENTAGE } from './src/settings';
 import { getRandomNumber, getDate, sleep } from './src/utils';
 
 async function login() {
@@ -240,6 +240,11 @@ async function findAvailableCoworkerMeals(
  * Trigger function to log in and reserve a meal.
  */
 (async function trigger() {
+	if (!ENABLED) {
+		console.log('<🤖> Autopal is disabled in settings. Exiting...');
+		return false;
+	}
+
 	console.log('<🤖> Running Autopal ...🥙...🌯...🍱...🍔...');
 	const loginDetails = await login();
 	const token = loginDetails.sessionToken.split(':')[1] ?? '';
