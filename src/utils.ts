@@ -1,4 +1,5 @@
-import { TIMEZONE } from './settings';
+import { NOTIFICATION_FROM_EMAIL, NOTIFICATION_TO_EMAIL, TIMEZONE } from './settings';
+import sgMail from '@sendgrid/mail';
 
 export function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -24,12 +25,15 @@ export function getRandomNumber(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// export function sendNotification(message: string) {
-// 	const transporter = nodemailer.createTransport({
-// 		service: 'gmail',
-// 		auth: {
-// 			user: 'your-email@gmail.com',
-// 			pass: 'your-app-password', // generate an app password, don’t use real password
-// 		},
-// 	});
-// }
+export async function sendNotification(message: string) {
+	sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? '');
+
+	const result = await sgMail.send({
+		to: NOTIFICATION_TO_EMAIL,
+		from: NOTIFICATION_FROM_EMAIL,
+		subject: `< Autopal >`,
+		text: message.trim(),
+	});
+
+	return result;
+}

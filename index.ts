@@ -1,5 +1,5 @@
 import { CITY, ENABLED, MEALS, PICKUP_TIME, RANDOM_SELECT_PERCENTAGE } from './src/settings';
-import { getRandomNumber, getDate, sleep } from './src/utils';
+import { getRandomNumber, getDate, sleep, sendNotification } from './src/utils';
 
 async function login() {
 	const res = await fetch('https://secure.mealpal.com/login', {
@@ -236,6 +236,26 @@ async function findAvailableCoworkerMeals(
 	return null;
 }
 
+async function getUpcomingOrders(sessionToken: string) {
+	const res = await fetch(`https://secure.mealpal.com/api/v6/upcoming_orders`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Cookie: `_mealpal_session=${sessionToken}`,
+		},
+	});
+	if (!res.ok) {
+		throw new Error(`Upcoming orders fetch failed: ${res.statusText}`);
+	}
+	const data = await res.json();
+	return data as {
+		id: string;
+		date: string; // eg. "2025-09-05"
+		pickup_link: string;
+		// and other data
+	}[];
+}
+
 /**
  * Trigger function to log in and reserve a meal.
  */
@@ -336,13 +356,35 @@ async function findAvailableCoworkerMeals(
 			console.log(
 				`<🤖> Meal reserved successfully!\n\nFor: ${loginDetails.firstName} ${loginDetails.lastName}\nRestaurant: ${bestMeal.foundMeal.restaurantName}\nMeal: ${bestMeal.foundMeal.mealName}\nPickup Time: ${PICKUP_TIME}`
 			);
+
+			// Get pickup link from upcoming order
+			const orders = await getUpcomingOrders(token);
+			const nextOrder = orders.find((o) => o.date === getDate());
+
+			await sendNotification(`
+I got you food! 🌯🥙🍣
+You're getting ${bestMeal.foundMeal.mealName} from ${bestMeal.foundMeal.restaurantName}.
+Pickup at ${PICKUP_TIME}.
+
+${nextOrder?.pickup_link.split('www.')[1] ?? ''}
+
+Enjoy! 😋
+`);
 			return true;
 		} else {
 			console.log(`<🤖> Failed to reserve meal. Status code: ${status}.`);
+			await sendNotification(`
+No meal today 💀
+I failed to reserve meal. Status code: ${status}.
+`);
 			return false;
 		}
 	} else {
 		console.log('<🤖> No meal found matching the criteria. Please check your settings.');
+		await sendNotification(`
+No meal today 😭
+I found no meals matching your criteria. Please check your settings.
+`);
 		return false;
 	}
 })();

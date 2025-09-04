@@ -11,6 +11,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "nodemailer": "^7.0.5"
+    "@sendgrid/mail": "^8.1.5"
   }
 }
