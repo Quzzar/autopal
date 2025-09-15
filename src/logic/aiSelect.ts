@@ -37,7 +37,7 @@ export async function findBestAiSelectMeal(_sessionToken: string, allMeals: Meal
 	Here's what I like to eat:
 	${PREFERENCE_PROMPT}
 
-	NOTE: Don't response with anything but the selected meal ID!
+	NOTE: Don't respond with anything but the selected meal ID!
 	No explanations, no additional text. Just the mealId in plain text.
 	`.trim();
 
