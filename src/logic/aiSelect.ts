@@ -1,5 +1,5 @@
 import { GEO_COORDS } from '../settings/general';
-import { MAX_TRAVEL_DISTANCE } from '../settings/modeAiSelect';
+import { MAX_TRAVEL_DISTANCE, PREFERENCE_PROMPT } from '../settings/modeAiSelect';
 import type { Meal } from '../types';
 import { getDistance } from '../utils';
 
@@ -34,6 +34,8 @@ export async function findBestAiSelectMeal(_sessionToken: string, allMeals: Meal
 		}))
 	)}
 
+	Here's what I like to eat:
+	${PREFERENCE_PROMPT}
 
 	NOTE: Don't response with anything but the selected meal ID!
 	No explanations, no additional text. Just the mealId in plain text.
