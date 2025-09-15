@@ -1,4 +1,7 @@
-import { CITY, ENABLED, MEALS, PICKUP_TIME, RANDOM_SELECT_PERCENTAGE } from './src/settings';
+import { findBestAiSelectMeal } from './src/logic/aiSelect';
+import { findBestPredefinedMeal } from './src/logic/predefined';
+import { CITY, ENABLED, MODE, PICKUP_TIME } from './src/settings/general';
+import type { Meal } from './src/types';
 import { getRandomNumber, getDate, sleep, sendNotification } from './src/utils';
 
 async function login() {
@@ -105,66 +108,6 @@ async function getMenu(sessionToken: string) {
 	};
 }
 
-async function getCoworkerMeals(sessionToken: string, dayOffset: number) {
-	const res = await fetch(`https://secure.mealpal.com/api/v3/dates/${getDate(dayOffset)}/workspace_menu`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Cookie: `_mealpal_session=${sessionToken}`,
-		},
-	});
-	if (!res.ok) {
-		throw new Error(`Workspace menu fetch failed: ${res.statusText}, ${res.url}`);
-	}
-	const data = await res.json();
-	return data as {
-		coworker_reservations: {
-			coworker: {
-				is_current_user: boolean;
-				id: string;
-				name: string;
-				full_name: string;
-				avatar: string;
-				floor: string;
-				company_address_id: string;
-			};
-			reservation: {
-				id: string;
-				pickup_time: string;
-				pickup_method: string;
-				for_delivery: boolean;
-				pickup_intent_owner: null;
-				is_mealpal_now: boolean;
-				schedule: {
-					id: string;
-					amount: number;
-					mpn_amount: number;
-					meal_credit_price: number;
-				};
-				meal: {
-					id: string;
-					name: string;
-					description: string;
-					image: string;
-					meal_group: string;
-					ingredients: string;
-					cuisine: string;
-					vegetarian: boolean;
-					healthy: boolean;
-					healthy_subtext: string;
-					portion: string;
-					retail_price_display_string: string;
-				};
-				restaurant: {
-					id: string;
-					name: string;
-					address: string;
-				};
-			} | null;
-		}[];
-	};
-}
-
 async function getInventories(sessionToken: string) {
 	const res = await fetch(`https://secure.mealpal.com/api/v1/cities/${CITY}/dates/${getDate()}/product_offerings/lunch/spending_strategies/credits/menu_inventories`, {
 		method: 'GET',
@@ -212,30 +155,6 @@ async function reserveMeal(sessionToken: string, scheduleId: string) {
 	return res.status;
 }
 
-async function findAvailableCoworkerMeals(
-	sessionToken: string,
-	allMeals: {
-		restaurantName: string;
-		scheduleId: string;
-		mealName: string;
-		mealId: string;
-		mealPortion: number;
-		inventory: number;
-	}[]
-) {
-	const mealsData = await getCoworkerMeals(sessionToken, -7);
-	const meals = mealsData.coworker_reservations.filter((r) => r.reservation).sort(() => Math.random() - 0.5);
-
-	for (const meal of meals) {
-		const foundMeal = allMeals.find((m) => m.mealId === meal.reservation?.meal.id);
-		if (foundMeal) {
-			return foundMeal;
-		}
-	}
-
-	return null;
-}
-
 async function getUpcomingOrders(sessionToken: string) {
 	const res = await fetch(`https://secure.mealpal.com/api/v6/upcoming_orders`, {
 		method: 'GET',
@@ -274,14 +193,7 @@ async function getUpcomingOrders(sessionToken: string) {
 	const menu = await getMenu(token);
 	const invs = await getInventories(token);
 
-	const allMeals: {
-		restaurantName: string;
-		scheduleId: string;
-		mealName: string;
-		mealId: string;
-		mealPortion: number;
-		inventory: number;
-	}[] = [];
+	const allMeals: Meal[] = [];
 	for (const restaurant of menu.restaurants) {
 		for (const schedule of restaurant.schedules) {
 			const inventory = invs.find((inv) => inv.id === schedule.id);
@@ -292,6 +204,14 @@ async function getUpcomingOrders(sessionToken: string) {
 				mealId: schedule.meal.id,
 				mealPortion: schedule.meal.portion,
 				inventory: inventory?.amount ?? -999,
+				description: schedule.meal.description,
+				cuisine: schedule.meal.cuisine,
+				isHealthy: schedule.meal.healthy,
+				isVeggie: schedule.meal.veg,
+				coords: {
+					lng: parseFloat(restaurant.coordinates.longitude),
+					lat: parseFloat(restaurant.coordinates.latitude),
+				},
 			});
 		}
 	}
@@ -299,62 +219,35 @@ async function getUpcomingOrders(sessionToken: string) {
 	await sleep(getRandomNumber(500, 3000));
 
 	// Find best meal
-	const SETTINGS_RECORDS = MEALS.sort((a, b) => a.priority - b.priority);
-
-	let bestMeal: {
-		foundMeal: (typeof allMeals)[0];
-		settingsRecord: (typeof MEALS)[0] | null;
-	} | null = null;
-	for (const M of SETTINGS_RECORDS) {
-		const meal = allMeals.find((m) => {
-			if (M.mealName && M.restaurantName) {
-				return m.mealName.match(M.mealName) && m.restaurantName.match(M.restaurantName);
-			}
-			if (M.restaurantName) {
-				return m.restaurantName.match(M.restaurantName);
-			}
-			if (M.mealName) {
-				return m.mealName.match(M.mealName);
-			}
-			return false;
-		});
-		if (meal) {
-			bestMeal = {
-				foundMeal: meal,
-				settingsRecord: M,
-			};
-			break;
-		}
+	let mode = MODE;
+	if (MODE === 'RANDOM') {
+		mode = 50 > getRandomNumber(0, 100) ? 'PREDEFINED' : 'AI-SELECT';
+		console.log(`<🤖> Randomly using method: ${mode}!`);
 	}
 
-	// Randomly select a meal
+	let bestMeal = mode === 'AI-SELECT' ? await findBestAiSelectMeal(token, allMeals) : await findBestPredefinedMeal(token, allMeals);
 
-	const bestPriority = SETTINGS_RECORDS[0]?.priority;
-	const worstPriority = SETTINGS_RECORDS[SETTINGS_RECORDS.length - 1]?.priority;
-	const midPriority = Math.floor(((bestPriority ?? 0) + (worstPriority ?? 0)) / 2);
-
-	if (!bestMeal || (bestMeal.settingsRecord && bestMeal.settingsRecord.priority > midPriority) || true) {
-		if (RANDOM_SELECT_PERCENTAGE >= getRandomNumber(0, 100)) {
-			console.log('<🤖> Randomly selecting a meal instead of the best match...');
-
-			const foundMeal = await findAvailableCoworkerMeals(token, allMeals);
-			if (foundMeal) {
-				bestMeal = {
-					foundMeal,
-					settingsRecord: null,
-				};
-			}
+	if (!bestMeal && MODE === 'RANDOM') {
+		console.log(`<🤖> No meal found using ${mode} method, switching to try other method...`);
+		if (mode === 'AI-SELECT') {
+			mode = 'PREDEFINED';
+			console.log(`<🤖> Now trying ${mode} method!`);
+			bestMeal = await findBestPredefinedMeal(token, allMeals);
+		} else {
+			mode = 'AI-SELECT';
+			console.log(`<🤖> Now trying ${mode} method!`);
+			bestMeal = await findBestAiSelectMeal(token, allMeals);
 		}
 	}
 
 	if (bestMeal) {
-		if (bestMeal.foundMeal.inventory <= 0) {
-			console.log(`<🤖> Not enough inventory for ${bestMeal.foundMeal.mealName} at ${bestMeal.foundMeal.restaurantName}. Attempting to reserve anyway...`);
+		if (bestMeal.inventory <= 0) {
+			console.log(`<🤖> Not enough inventory for ${bestMeal.mealName} at ${bestMeal.restaurantName}. Attempting to reserve anyway...`);
 		}
-		const status = await reserveMeal(token, bestMeal.foundMeal.scheduleId);
+		const status = await reserveMeal(token, bestMeal.scheduleId);
 		if (status === 201) {
 			console.log(
-				`<🤖> Meal reserved successfully!\n\nFor: ${loginDetails.firstName} ${loginDetails.lastName}\nRestaurant: ${bestMeal.foundMeal.restaurantName}\nMeal: ${bestMeal.foundMeal.mealName}\nPickup Time: ${PICKUP_TIME}`
+				`<🤖> Meal reserved successfully!\n\nFor: ${loginDetails.firstName} ${loginDetails.lastName}\nRestaurant: ${bestMeal.restaurantName}\nMeal: ${bestMeal.mealName}\nPickup Time: ${PICKUP_TIME}`
 			);
 
 			// Get pickup link from upcoming order
@@ -363,7 +256,7 @@ async function getUpcomingOrders(sessionToken: string) {
 
 			await sendNotification(`
 I got you food! 🌯🥙🍣
-You're getting ${bestMeal.foundMeal.mealName} from ${bestMeal.foundMeal.restaurantName}.
+You're getting ${bestMeal.mealName} from ${bestMeal.restaurantName}.
 Pickup at ${PICKUP_TIME}.
 
 ${nextOrder?.pickup_link.split('www.')[1] ?? ''}

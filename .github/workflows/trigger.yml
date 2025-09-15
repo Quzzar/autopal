@@ -12,6 +12,7 @@ jobs:
             MEALPAL_USERNAME: ${{ secrets.MEALPAL_USERNAME }}
             MEALPAL_PASSWORD: ${{ secrets.MEALPAL_PASSWORD }}
             SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         steps:
             - uses: oven-sh/setup-bun@v1
               with:

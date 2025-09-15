@@ -1,8 +1,12 @@
-import { NOTIFICATION_FROM_EMAIL, NOTIFICATION_TO_EMAIL, TIMEZONE } from './settings';
+import { NOTIFICATION_FROM_EMAIL, NOTIFICATION_TO_EMAIL, TIMEZONE } from './settings/general';
 import sgMail from '@sendgrid/mail';
 
 export function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function getDistance(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
+	return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 }
 
 export function getDate(dayOffset: number = 0): string {
