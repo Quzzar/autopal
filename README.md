@@ -10,12 +10,12 @@ Edit settings to configure your lunch res:
 To run locally, install dependencies:
 
 ```bash
-bun install
+npm i
 ```
 
 and run:
 
 ```bash
-bun run index.ts
+npm run dev
 ```
 
