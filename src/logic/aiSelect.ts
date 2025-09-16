@@ -69,10 +69,12 @@ export async function findBestAiSelectMeal(_sessionToken: string, allMeals: Meal
 			return selectedMeal;
 		} else {
 			// Meal ID not found
+			console.warn('Error! AI said:', selectedMealId);
 			return null;
 		}
 	} else {
 		// Failed response from AI
+		console.warn('Error! Bad AI response:', data, res.status, res.statusText);
 		return null;
 	}
 }

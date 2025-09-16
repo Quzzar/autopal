@@ -3,10 +3,11 @@ export const MAX_TRAVEL_DISTANCE = 0.004; // ~400m
 //
 export const PREFERENCE_PROMPT = `
 
-I love healthy food options with salmon and rice bowls.
-That's my favorite meal type.
-
-Beyond that, I love a good sandwich occationally or a hearty salad.
-Idk something fun!!
+I love healthy food options. I'd love some meat like salmon or chicken, but I'm open to other options too.
+Please be very mindful, this is my meal bascially every day. It will be the defining factor in my health and physique.
+As you know, diet is 80% of the battle when it comes to health and fitness.
+And this - is - my diet, it'll eat anything you select for me.
+So please, please, please make sure to give me the best option possible.
+It will be the difference between me being healthy and in shape or not.
 
 `.trim();

@@ -10,4 +10,4 @@ export const NOTIFICATION_TO_EMAIL = '8318339596@msg.fi.google.com';
 //
 export const PICKUP_TIME = '1:00PM-1:15PM';
 //
-export const MODE: 'PREDEFINED' | 'AI-SELECT' | 'RANDOM' = 'RANDOM';
+export const MODE: 'PREDEFINED' | 'AI-SELECT' | 'RANDOM' = 'AI-SELECT';
