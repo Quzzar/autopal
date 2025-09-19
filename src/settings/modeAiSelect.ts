@@ -10,4 +10,6 @@ And this - is - my diet, it'll eat anything you select for me.
 So please, please, please make sure to give me the best option possible.
 It will be the difference between me being healthy and in shape or not.
 
+I've heard sweetgreen, Carrot express, and Rowdy Roosters have really healthy and great food.
+
 `.trim();
