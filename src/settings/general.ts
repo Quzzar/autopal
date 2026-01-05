@@ -1,5 +1,5 @@
 //
-export const ENABLED = true;
+export const ENABLED = false;
 //
 export const CITY = `00000000-1000-4000-9845-9344bdb9408c`; // NYC
 export const TIMEZONE = 'America/New_York';
