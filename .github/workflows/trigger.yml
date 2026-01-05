@@ -2,7 +2,7 @@ name: Cron Job
 
 on:
     schedule:
-        - cron: '0 9 * * 1,2,4,5'
+        - cron: "0 9 * * 1,2,4,5"
     workflow_dispatch:
 
 jobs:
@@ -11,7 +11,8 @@ jobs:
         env:
             MEALPAL_USERNAME: ${{ secrets.MEALPAL_USERNAME }}
             MEALPAL_PASSWORD: ${{ secrets.MEALPAL_PASSWORD }}
-            SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+            MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+            MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
             OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         steps:
             - uses: oven-sh/setup-bun@v1

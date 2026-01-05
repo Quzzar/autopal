@@ -1,5 +1,6 @@
 import { NOTIFICATION_FROM_EMAIL, NOTIFICATION_TO_EMAIL, TIMEZONE } from './settings/general';
-import sgMail from '@sendgrid/mail';
+import FormData from 'form-data';
+import Mailgun from 'mailgun.js';
 
 export function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -30,14 +31,22 @@ export function getRandomNumber(min: number, max: number) {
 }
 
 export async function sendNotification(message: string) {
-	sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? '');
-
-	const result = await sgMail.send({
-		to: NOTIFICATION_TO_EMAIL,
-		from: NOTIFICATION_FROM_EMAIL,
-		subject: `< Autopal >`,
-		text: message.trim(),
+	const mailgun = new Mailgun(FormData);
+	const mg = mailgun.client({
+		username: 'api',
+		key: process.env.MAILGUN_API_KEY ?? '',
 	});
+	try {
+		const data = await mg.messages.create(process.env.MAILGUN_DOMAIN ?? '', {
+			from: NOTIFICATION_FROM_EMAIL,
+			to: ['aaronncassar@gmail.com'],
+			subject: `< Autopal >`,
+			text: message.trim(),
+		});
 
-	return result;
+		console.log(data);
+		return data;
+	} catch (error) {
+		console.log(error);
+	}
 }
